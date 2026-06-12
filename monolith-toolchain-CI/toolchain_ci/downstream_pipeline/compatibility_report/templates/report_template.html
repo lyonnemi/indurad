@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Compatibility Report for revision {{ report.revision }}</title>
+    <style>{{ bootstrap_css }}</style>
+    <style>
+        .check {
+            color: #42a619;
+            background-color: #dff0d8;
+            text-align: center;
+            vertical-align: middle;
+            font-size: 20px;
+        }
+
+        .check-unstable {
+            color: #6e6e64;
+            background-color: #fafacd;
+            text-align: center;
+            vertical-align: middle;
+            font-size: 20px;
+        }
+
+        .cross {
+            color: #8e8e8e;
+            background-color: #f2f2f2;
+            text-align: center;
+            vertical-align: middle;
+            font-size: 20px;
+        }
+
+        .cross-unstable {
+            color: #6e6e64;
+            background-color: #ebebbf;
+            text-align: center;
+            vertical-align: middle;
+            font-size: 20px;
+        }
+
+        .failure {
+            color: #cc2929;
+            background-color: #f2dede;
+            text-align: center;
+            vertical-align: middle;
+            font-size: 20px;
+        }
+
+        .table-fixed-header {
+            position: sticky;
+            top: 0;
+            background-color: white;
+            z-index: 1;
+        }
+
+        .table-fixed-rowheader {
+            position: sticky;
+            left: 0;
+            vertical-align: middle;
+            background-color: white;
+        }
+
+        abbr[title] {
+            border-bottom: none !important;
+            cursor: inherit !important;
+            text-decoration: none !important;
+        }
+
+        h1 {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<h1>Compatibility Report for <a href="{{ git_url }}">{{ commit_link_label }}</a></h1>
+<div style="margin: 1em">
+    <table class="table table-bordered">
+        <thead class="table-fixed-header">
+        <tr>
+            <th scope="col">Target</th>
+            <th scope="col">Target Type</th>
+            {% for config in report.configurations %}
+                <th scope="col">
+                    <div style="min-width: 10em">
+                        <abbr title="Platform"><code>{{ config.platform }}</code></abbr>
+                        <br>
+                        <abbr title="Toolchain version"><code>{{ config.toolchain_version }}</code></abbr>
+                        <br>
+                        <abbr title="C++ standard"><code>C++{{ config.cxx }}</code></abbr>
+                    </div>
+                </th>
+            {% endfor %}
+        </tr>
+        </thead>
+        <tbody>
+        {% for target in report.targets %}
+            <tr>
+                <td class="table-fixed-rowheader target-path"><b>{{ strip_monolith_prefix(target.target_path) }}</b></td>
+                <td>
+                    {% if target.target_type == "LIBRARY" %}
+                        {{ target.library_type }} {{ target.target_language }}
+                        {{ target.target_type }}
+                    {% elif target.target_type == "EXECUTABLE" %}
+                        {{ target.target_language }} {{ target.target_type }}
+                    {% else %}
+                        {{ target.target_type }}
+                    {% endif %}
+                </td>
+                {% set outer_loop_index = loop.index0 %}
+                {% for config in report.configurations %}
+                    {% if outer_loop_index in config.targets %}
+                        {% if config.build_state == "SUCCESS" %}
+                            <td class="check"
+                                title="target available,&#013;&#010;build {{ config.build_state }}">
+                                &#x2713;
+                            </td>
+                        {% elif config.build_state == "UNSTABLE" %}
+                            <td class="check-unstable"
+                                title="target available,&#013;&#010;build {{ config.build_state }}">
+                                &#x2713;
+                            </td>
+                        {% else %}
+                            <td class="failure"
+                                title="target available,&#013;&#010;build {{ config.build_state }}">
+                                (&#x2713;)
+                            </td>
+                        {% endif %}
+                    {% else %}
+                        {% if config.build_state == "SUCCESS" %}
+                            <td class="cross"
+                                title="target n/a,&#013;&#010;build {{ config.build_state }}">
+                                &#x2715;
+                            </td>
+                        {% elif config.build_state == "UNSTABLE" %}
+                            <td class="cross-unstable"
+                                title="target n/a,&#013;&#010;build {{ config.build_state }}">
+                                &#x2715;
+                            </td>
+                        {% else %}
+                            <td class="failure"
+                                title="target n/a,&#013;&#010;build {{ config.build_state }}">
+                                (&#x2715;)
+                            </td>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

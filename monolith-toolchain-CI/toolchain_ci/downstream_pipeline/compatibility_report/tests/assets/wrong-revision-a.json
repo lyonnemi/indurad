@@ -1,0 +1,27 @@
+{
+	"version": 1,
+	"revision": "0a123fd12c",
+	"distro": "iCharlie",
+	"toolchain_version": "12.0.1",
+	"build_state": "SUCCESS",
+	"platform": "ct20",
+	"cxx": "98",
+	"targets": [
+		[
+			"iframework/tests/iframework-testrunner",
+			"EXECUTABLE",
+			"CXX"
+		],
+		[
+			"iframework/tests-integration/iframework-integration-testrunner",
+			"EXECUTABLE",
+			"CXX"
+		],
+		[
+			"3rdparty/libzstd/libzstd.so",
+			"LIBRARY",
+			"STATIC",
+			"C"
+		]
+	]
+}

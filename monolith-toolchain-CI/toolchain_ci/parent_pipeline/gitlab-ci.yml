@@ -1,0 +1,68 @@
+variables:
+  TOOLCHAIN_CI_MONOLITH_PROJECT:
+    value: 'master/monolith'
+    description: 'monolith GitLab project to build'
+  TOOLCHAIN_CI_MONOLITH_REVISION:
+    value: 'master'
+    description: 'monolith revision to build'
+  TOOLCHAIN_CI_PLATFORMS_TO_BUILD:
+    value: 'local androidarm64v8a androidx64 amd64generic automation ct20 i686generic ildrv2 ildrv3 microbox te0803 ultrascale v700'
+    description: 'Space-separated list of platforms to build (local, androidarm64v8a, androidx64, amd64generic, automation, ct20, i686generic, ildrv2, ildrv3, microbox, te0803, ultrascale and/or v700)'
+  TOOLCHAIN_CI_MIN_TOOLCHAIN_VERSION:
+    value: '18.3.0'
+    description: 'Minimum toolchain version to build (empty = no limit)'
+  TOOLCHAIN_CI_MAX_TOOLCHAIN_VERSION:
+    value: ''
+    description: 'Maximum toolchain version to build (empty = no limit). The limit is exclusive, e.g., this is the first toolchain version that will not be built.'
+  TOOLCHAIN_CI_CXX_VERSIONS:
+    value: '20'
+    description: 'Space-separated list of C++ standards to build (14, 17, 20). Keep in mind that your given monolith revision may not be compatible with all of these standards.'
+  TOOLCHAIN_CI_FORCE_REBUILD:
+    value: 'false'
+    description: 'If set to ''true'', the pipeline will do a full rebuild regardless whether a given configuration was already built previously or not (true or false). Enabling this option is only necessary if the build environment has changed between builds of the same job configuration (e.g., new calvin release, updated build image, etc.).'
+
+"Run tests":
+  stage: 'build'
+  needs: [ ]
+  script:
+    - 'python3 -m unittest discover'
+
+# This is a separate CI job to set an environment variable,
+# MONOLITH_COMMIT_SHA, in the context of .gitlab-ci.yml evaluation.
+# This variable is part of the cache key in the config of the "Generate CI config" job.
+"Resolve monolith revision":
+  stage: 'build'
+  needs: [ ]
+  script:
+    - 'python3 -m toolchain_ci.parent_pipeline.resolve_monolith_revision'
+  artifacts:
+    reports:
+      dotenv: 'resolved_monolith_revision.env'
+
+"Generate CI config":
+  extends: '.indurad-ci-scripts'
+  stage: 'build'
+  needs:
+    - "Resolve monolith revision"
+    - "Run tests"
+  tags: [ 'toolchain-ci' ]
+  cache:
+    key: '$CI_COMMIT_SHA $MONOLITH_COMMIT_SHA $TOOLCHAIN_CI_PLATFORMS_TO_BUILD $TOOLCHAIN_CI_MIN_TOOLCHAIN_VERSION $TOOLCHAIN_CI_MAX_TOOLCHAIN_VERSION $TOOLCHAIN_CI_CXX_VERSIONS'
+    paths: [ 'monolith_already_built_flag' ]
+    policy: 'pull'
+  script:
+    - 'python3 -m toolchain_ci.parent_pipeline.generate_toolchain_ci'
+  artifacts:
+    paths:
+      - 'toolchain_ci.yml'
+
+"Toolchain CI":
+  needs: [ "Generate CI config" ]
+  trigger:
+    include:
+      - artifact: 'toolchain_ci.yml'
+        job: "Generate CI config"
+    strategy: 'depend'
+    forward:
+      pipeline_variables: false
+      yaml_variables: false

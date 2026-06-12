@@ -1,0 +1,17 @@
+Experimental: phony
+CMakeFiles/test.util: CUSTOM_COMMAND
+3rdparty/abseil/abseil/absl/base/libabsl_log_severity.so: CMAKE_SYMLINK_LIBRARY
+3rdparty/ffts/ffts/libffts.a: C_STATIC_LIBRARY_LINKER__ffts_static_Release
+products/iyard/nmea/flush_buffer: C_EXECUTABLE_LINKER__flush_buffer_Release
+staging/ican/CMakeFiles/islip.dir/islip/islip.c.o: C_COMPILER__islip_Release
+staging/iserialv3/protocol/libiserialv3-protocol.so: C_SHARED_LIBRARY_LINKER__iserialv3-protocol_Release
+ioau/idat-plugin/libIdatPluginQml-code.a: CXX_STATIC_LIBRARY_LINKER__IdatPluginQml-code_Release
+ioau/idat-plugin/libIdatPluginQml.so: CXX_MODULE_LIBRARY_LINKER__IdatPluginQml_Release
+tools/radar_idat/radar_idat_irpu: CXX_EXECUTABLE_LINKER__radar_idat_irpu_Release
+tools/radar_idat/CMakeFiles/radar_idat_irpu.dir/irpu/src/main.cpp.o: CXX_COMPILER__radar_idat_irpu_Release
+tools/radar_idat/irpu/lib/radar/radar_idat/radar/libradar-idat-radar.so: CXX_SHARED_LIBRARY_LINKER__radar-idat-radar_Release
+/build/cmake-build-release/CMakeFiles/cmake.verify_globs: VERIFY_GLOBS
+build.ninja: RERUN_CMAKE
+CMakeFiles/clean.additional: CLEAN_ADDITIONAL
+clean: CLEAN
+help: HELP

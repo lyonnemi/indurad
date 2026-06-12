@@ -1,0 +1,86 @@
+workflow:
+  rules:
+    - when: 'always'
+
+{% if already_built %}
+
+# Every job must provide a 'script' section, so we provide one here.
+'Dummy job':
+  script:
+    - '# This is a dummy job. We only need it as GitLab CI cannot trigger pipelines conditionally.'
+
+
+{% else %}
+include:
+  - project: 'software-qa/indurad-ci'
+    ref: 'indurad-ci-production-v2'
+    file: '/gitlab/gitlab-ci.yml'
+
+variables:
+  ITELEMETRY_STORAGE: ''
+  TOOLCHAIN_CI_MONOLITH_PROJECT: '{{ monolith_project }}'
+  TOOLCHAIN_CI_MONOLITH_REVISION: 'ci--create-error-messages--T146430--llo'
+  TOOLCHAIN_CI_MONOLITH_DESCRIBE: '{{ monolith_describe }}'
+  TOOLCHAIN_CI_PLATFORMS_TO_BUILD: '{{ platforms_to_build }}'
+  TOOLCHAIN_CI_MIN_TOOLCHAIN_VERSION: '{{ min_toolchain_version }}'
+  TOOLCHAIN_CI_MAX_TOOLCHAIN_VERSION: '{{ max_toolchain_version }}'
+  TOOLCHAIN_CI_CXX_VERSIONS: '{{ cxx_versions }}'
+
+.build_toolchain_softfs:
+  extends: '.build-softfs'
+  timeout: 3h
+  variables:
+    RUNNER_SCRIPT_TIMEOUT: 2h45m
+    RUNNER_AFTER_SCRIPT_TIMEOUT: 5m
+    SOFTFS_BUILD_MODE: 'DEVELOPMENT'
+    SOFTFS_ARTIFACT: 'none'
+  script:
+    - 'python3 -m toolchain_ci.downstream_pipeline.format_calvin_conf'
+    - !reference [.build-softfs, script]
+  after_script:
+    - '(cd build/_project_BUILD_* && ninja -t targets all || echo -n "") | python3 -m toolchain_ci.downstream_pipeline.target_list'
+  artifacts:
+    when: 'always'
+    expire_in: 4 days
+    paths:
+      - 'target-list.${CI_JOB_ID}.json'
+      # unfortunately, the following entries needed to be copied from sofware-qa/indurad-ci's .build_softfs_artifacts
+      - 'build/calvin.log'
+      - 'build/calvin-verbose.log'
+      - 'build/cmake.log'
+      - 'build/ninja-build.log'
+
+{% for ci_job in toolchain_ci_jobs %}
+"{{ ci_job.gitlab_job_name() }}":
+  extends: .build_toolchain_softfs
+  allow_failure: true
+  variables:
+{% if ci_job.custom_build_image %}
+    INDURAD_CI_DOCKER_IMAGE: '{{ ci_job.custom_build_image }}'
+{% endif %}
+    SOFTFS_SOURCE_PATH: 'toolchain_ci/assets/softfs'
+    TOOLCHAIN_CI_DISTRO: '{{ ci_job.distro if ci_job.distro }}'
+    TOOLCHAIN_CI_PLATFORM: '{{ ci_job.platform }}'
+    TOOLCHAIN_CI_TOOLCHAIN_VERSION: '{{ ci_job.toolchain_version if ci_job.toolchain_version }}'
+    TOOLCHAIN_CI_CMAKE_CXX_STANDARD: '{{ ci_job.cmake_cxx_standard }}'
+
+{% endfor %}
+"Generate report":
+  extends: .indurad-ci-scripts
+  stage: 'test'
+  tags: [ 'toolchain-ci' ]
+  cache:
+    key: '$CI_COMMIT_SHA $TOOLCHAIN_CI_MONOLITH_REVISION $TOOLCHAIN_CI_PLATFORMS_TO_BUILD $TOOLCHAIN_CI_MIN_TOOLCHAIN_VERSION $TOOLCHAIN_CI_MAX_TOOLCHAIN_VERSION $TOOLCHAIN_CI_CXX_VERSIONS'
+    paths: [ 'monolith_already_built_flag' ]
+    policy: 'push'
+  script:
+    - 'python3 -m toolchain_ci.downstream_pipeline.compatibility_report'
+  artifacts:
+    when: 'always'
+    expose_as: 'Target compatibility report'
+    expire_in: 4 week
+    paths:
+      - 'TargetCompatibility.json'
+      - 'TargetCompatibility.html'
+
+{% endif %}
