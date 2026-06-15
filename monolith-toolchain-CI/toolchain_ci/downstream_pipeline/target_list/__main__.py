@@ -81,6 +81,7 @@ def _main():
         build_state=build_state,
         targets=targets,
         platform=platform,
+        job_url=os.environ.get("CI_JOB_URL", ""),
     )
     toolchain_build.write_json(output_path)
 

@@ -49,7 +49,7 @@ class ToolchainBuild:
                 )
                 for target in data["targets"]
             },
-            job_url=os.environ.get("CI_JOB_URL"),
+            job_url=data.get("job_url", ""),
         )
 
     def write_json(self, path: pathlib.Path) -> None:

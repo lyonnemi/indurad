@@ -1,12 +1,16 @@
+import logging
 import pathlib
 import tempfile
 import unittest
-import logging
+
 from ..private.report import generate_compatibility_report
 
 _ASSETS_PATH = pathlib.Path(__file__).parent / "assets"
 
 logger = logging.getLogger("compatibility_report")
+
+_FAILED_JOB_URL = "https://gitlab.example.test/monolith/-/jobs/failed-job-a"
+_FAILED_JOB_B_URL = "https://gitlab.example.test/monolith/-/jobs/failed-job-b"
 
 
 class TestCompatibilityReport(unittest.TestCase):
@@ -49,8 +53,8 @@ class TestCompatibilityReport(unittest.TestCase):
         ]
         with tempfile.TemporaryDirectory() as temp_dir:
             temp_path = pathlib.Path(temp_dir)
-            with self.assertLogs(logger, logging.INFO) as context:
-                generate_compatibility_report(
+            with self.assertLogs(logger, logging.ERROR) as context:
+                pipeline_success = generate_compatibility_report(
                     git_url="git_url",
                     output_path=temp_path,
                     output_name="output_name",
@@ -58,8 +62,22 @@ class TestCompatibilityReport(unittest.TestCase):
                     commit_link_label="v10.x-commit-hash",
                 )
 
-            full_log = "\n".join(context.output)
+            self.assertFalse(pipeline_success)
 
-            pattern = r".*Toolchain Version: .+\n" r".*Platform: .+\n" r".*CXX: .+\n" r".*URL: .+\n"
+            expected_log_lines = [
+                "ERROR:compatibility_report:Failed builds: 2",
+                "ERROR:compatibility_report:Toolchain Version: 12.0.1",
+                "ERROR:compatibility_report:Platform: ct20",
+                "ERROR:compatibility_report:CXX: 98",
+                f"ERROR:compatibility_report:URL: {_FAILED_JOB_URL}",
+                "ERROR:compatibility_report:Build status:FAILURE",
+                "ERROR:compatibility_report:------------------------------------",
+                "ERROR:compatibility_report:Toolchain Version: 12.0.1",
+                "ERROR:compatibility_report:Platform: ct20",
+                "ERROR:compatibility_report:CXX: 98",
+                f"ERROR:compatibility_report:URL: {_FAILED_JOB_B_URL}",
+                "ERROR:compatibility_report:Build status:FAILURE",
+                "ERROR:compatibility_report:------------------------------------",
+            ]
 
-            self.assertRegex(full_log, pattern)
+            self.assertEqual(expected_log_lines, context.output)

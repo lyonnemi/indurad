@@ -3,7 +3,8 @@
 	"revision": "0a123fd12c",
 	"distro": "iCharlie",
 	"toolchain_version": "12.0.1",
-	"build_state": "FAILED",
+	"build_state": "FAILURE",
+	"job_url": "https://gitlab.example.test/monolith/-/jobs/failed-job-b",
 	"platform": "ct20",
 	"cxx": "98",
 	"targets": [
