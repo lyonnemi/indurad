@@ -1,0 +1,27 @@
+indurad-ci-launcher (1.0.3) bookworm; urgency=medium
+
+  * FIX: [debian] Fix lintian issues
+
+ -- Johannes Reinartz <johannes.reinartz@indurad.com>  Tue, 26 Aug 2025 10:09:42 +0200
+
+indurad-ci-launcher (1.0.2) bullseye; urgency=medium
+
+  * BREAKING: [cmake] Parse compiler warnings in cmake.cmake_build
+  * debian: add explicit lintian suppression
+
+ -- Jan Garcia <jan.garcia@indurad.com>  Mon, 09 Oct 2023 09:18:29 +0200
+
+indurad-ci-launcher (1.0.1) bullseye; urgency=medium
+
+  [ Jan Garcia ]
+  * FIX: [launcher] Forward the exact exit-code of subprocesses
+  * FIX: [debian] Fix Debian 12 lintian issues
+
+ -- Jan Garcia <jan.garcia@indurad.com>  Mon, 02 Oct 2023 11:49:42 +0200
+
+indurad-ci-launcher (1.0.0) bullseye; urgency=medium
+
+  [ Jan Garcia ]
+  * initial release
+
+ -- Philipp Hübner <philipp.huebner@indurad.com>  Wed, 02 Nov 2022 10:56:50 +0100

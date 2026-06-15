@@ -1,0 +1,79 @@
+This is LuaHBTeX, Version 1.15.0 (TeX Live 2022/Debian)
+ restricted system commands enabled.
+(./foobar.tex
+LaTeX2e <2022-11-01> patch level 1
+ L3 programming layer <2023-01-16> (/usr/share/texlive/texmf-dist/tex/generic/luatex85/luatex85.sty) (./sphinxmanual.cls
+Document Class: sphinxmanual 2019/12/01 v2.3.0 Document class (Sphinx manual)
+(/usr/share/texlive/texmf-dist/tex/latex/base/report.cls
+Document Class: report 2022/07/02 v1.4n Standard LaTeX document class
+For additional information on amsmath, use the `?' option.
+Package tocloft Warning: \@starttoc has already been redefined; tocloft bailing out. on input line 1156.
+)
+Writing index file "Foo Bar".idx
+luaotfload | loaders : eval: found tfmdata for "luaotfload<1>", injecting. ("./Foo Bar.aux")
+[Loading MPS to PDF converter (version 2006.09.02).]
+) (/usr/share/texlive/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
+*geometry* driver: auto-detecting
+*geometry* detected driver: luatex
+("./Foo Bar.out") ("./Foo Bar.out")<<oml.cmap>>
+LaTeX Warning: Hyper reference `gitlab_markdown_test:gitlab-flavored-markdown' on page 1 undefined on input line 333.
+luaotfload | loaders : eval: found tfmdata for "luaotfload<10>", injecting.
+warning  (pdf backend): ignoring duplicate destination with the name 'page.1'
+Chapter 1.
+Chapter 2.
+Package hyperref Warning: Suppressing empty link on input line 30."
+luaotfload | loaders : eval: found tfmdata for "luaotfload<18>", injecting. [15
+Missing character: There is no 한 (U+D55C) in font DejaVuSansMono/B:mode=harf;script=latn;language=dflt;!
+Missing character: There is no 글 (U+AE00) in font DejaVuSansMono/B:mode=harf;script=latn;language=dflt;!
+]
+
+LaTeX Warning: File `{img/wrong_indurad_logo}.png' not found on input line 42.
+LaTeX Warning: File `{img/wrong_indurad_logo}.png' not found on input line 42.
+! Package luatex.def Error: File `img/wrong_indurad_logo.png' not found: using draft setting.
+See the luatex.def package documentation for explanation.
+Type  H <return>  for immediate help.
+ ....def Error: File `\Gin@base .png' not found: using draft setting.
+See the luatex.def package documentation for explanation.
+Type  H <return>  for immediate help\@err@                                                                   
+                                                                                                                                                                                                                                              
+l.1420 \sphinxincludegraphics{{img/wrong_indurad_logo}.png}
+[16
+This issue is not yet known.
+Missing character: There is no 한 (U+D55C) in font DejaVuSansMono:mode=harf;script=latn;language=dflt;!
+Missing character: There is no 글 (U+AE00) in font DejaVuSansMono:mode=harf;script=latn;language=dflt;!
+<./indurad_logo.png>]
+[17<./2.jpg>]
+luaotfload | loaders : eval: found tfmdata for "luaotfload<19>", injecting.
+LaTeX Warning: Hyper reference `gitlab_markdown_test:./other_md_doc.md:my-header' on page 19 undefined on input line 1588.
+[19]
+[255
+] foobar
+lth.png>] [1304<./foobar.png>] [1305] [1306
+Chapter 3.
+(hyperref)                removing `\suppress_this' on input line 80.
+Overfull \hbox (2.4845pt too wide) in paragraph at lines 50--50
+[][]\TU/robotocondensed-symbola/b/n/10 header
+Overfull \hbox (2.12345pt too wide) in paragraph at lines 50--50
+Underfull \hbox (badness 10000) in paragraph at lines 2--2
+Overfull \vbox (2.34567pt too high) detected at line 75
+\TU/roboto-symbola/m/n/10 text-text-text-text-
+Overfull \hbox (3.14159pt too wide) detected at line 114
+[22] [23]
+(hyperref)                removing `\bad_token' on input line 80.
+Chapter 4.
+[38] [39] [40] [41
+Package tabulary Warning: No suitable columns! on input line 90.
+Overfull \vbox (5.67890pt too high) has occurred while \output is active. More unimportant text.
+Missing character: There is no ⁃ (U+2043) in font DejaVuSansMono:mode=harf;script=latn;language=dflt;!
+] [42] [43] [44] [45]
+No file "Foo Bar".ind.
+[46] ("./Foo Bar.aux")
+LaTeX Warning: There were undefined references.
+)
+(see the transcript file for additional information)
+ 807 words of node memory still in use:
+   6 hlist, 2 vlist, 2 rule, 4 glue, 4 kern, 1 glyph, 11 attribute, 108 glue_spec, 11 attribute_list, 2 write, 1 pdf_action nodes
+   avail lists: 1:5,2:2081,3:663,4:1770,5:716,6:211,7:6825,8:157,9:1621,10:53,11:552,12:11
+</usr/share/fonts/truetype/ancient-scripts/Symbola_hint.ttf></usr/share/texlive/texmf-dist/fonts/opentype/google/roboto/Roboto-BoldItalic.otf>
+Output written on Foo Bar.pdf (49 pages, 222703 bytes).
+Transcript written on "Foo Bar.log".

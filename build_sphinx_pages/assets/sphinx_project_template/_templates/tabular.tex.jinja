@@ -1,0 +1,70 @@
+\begin{savenotes}\sphinxattablestart
+\sphinxthistablewithglobalstyle
+<% if 'booktabs' in table.styles -%>
+\sphinxthistablewithbooktabsstyle
+<% endif -%>
+<% if 'borderless' in table.styles -%>
+\sphinxthistablewithborderlessstyle
+<% endif -%>
+<% if 'standard' in table.styles -%>
+\sphinxthistablewithstandardstyle
+<% endif -%>
+<% if 'vlines' in table.styles -%>
+\sphinxthistablewithvlinesstyle
+<% endif -%>
+<% if 'novlines' in table.styles -%>
+\sphinxthistablewithnovlinesstyle
+<% endif -%>
+<% if 'colorrows' in table.styles -%>
+\sphinxthistablewithcolorrowsstyle
+<% endif -%>
+<% if 'nocolorrows' in table.styles -%>
+\sphinxthistablewithnocolorrowsstyle
+<% endif -%>
+<% if table.align -%>
+  <%- if table.align in ('center', 'default') -%>
+  \centering
+  <%- elif table.align == 'left' -%>
+  \raggedright
+  <%- else -%>
+  \raggedleft
+  <%- endif %>
+<%- else -%>
+  \centering
+<%- endif %>
+<% if table.caption -%>
+\sphinxcapstartof{table}
+\sphinxthecaptionisattop
+\sphinxcaption{<%= ''.join(table.caption) %>}<%= labels %>
+\sphinxaftertopcaption
+<% elif labels -%>
+\phantomsection<%= labels %>\nobreak
+<% endif -%>
+\begin{tabular}[t]<%= table.get_colspec() -%>
+\sphinxtoprule
+<%- if table.header -%>
+<% for field in table.header -%>
+    <% if "\sphinxAtStartPar" in field -%>
+        % Prevent underfull warnings by disabling full justification in table cells
+        \RaggedRight
+    <%- endif -%>
+    <% if field[0] and field[0] in "\\&\n" -%>
+        <%= field -%>
+    <%- else -%>
+        \sffamily\bfseries\textcolor{white}{<%= field -%>}
+    <%- endif %>
+<%- endfor -%>
+\sphinxmidrule
+<% endif -%>
+\sphinxtableatstartofbodyhook
+<% for row in table.body -%>
+    <% if "\sphinxAtStartPar" in row -%>
+        % Prevent underfull warnings by disabling full justification in table cells
+        \RaggedRight
+    <%- endif -%>
+    <%= row -%>
+<%- endfor -%>
+\sphinxbottomrule
+\end{tabular}
+\sphinxtableafterendhook\par
+\sphinxattableend\end{savenotes}

@@ -1,0 +1,111 @@
+111a112,121
+>     # option_list
+>     option_list=None,
+>     option_list_item=None,
+>     option=None,
+>     option_string=None,
+>     option_group=None,
+>     option_argument=None,
+>     description=None,
+>     # other
+>     todo_node=None,
+318a329,343
+>     def visit_caution(self, _node):
+>         """Sphinx caution directive."""
+>         self._push_box("CAUTION")
+> 
+>     @pushing_context
+>     def visit_danger(self, _node):
+>         """Sphinx danger directive."""
+>         self._push_box("DANGER")
+> 
+>     @pushing_context
+>     def visit_error(self, _node):
+>         """Sphinx error directive."""
+>         self._push_box("ERROR")
+> 
+>     @pushing_context
+323a349,358
+>     def visit_tip(self, _node):
+>         """Sphinx tip directive."""
+>         self._push_box("TIP")
+> 
+>     @pushing_context
+>     def visit_admonition(self, _node):
+>         """Sphinx admonition directive."""
+>         self._push_box("ADMONITION")
+> 
+>     @pushing_context
+336a372,426
+>     @pushing_context
+>     def visit_mermaid(self, _node):
+>         """Sphinx mermaid directive."""
+>         self.ctx.add(f"```mermaid\n{_node.attributes['code']}\n```")
+> 
+>     @pushing_context
+>     def visit_plantuml(self, _node):
+>         """Sphinx plantuml directive."""
+>         self.ctx.add(f"```plantuml\n{_node.attributes['uml']}\n```")
+> 
+>     @pushing_context
+>     def visit_graphviz(self, _node):
+>         """Sphinx graphviz directive."""
+>         self.ctx.add(f"```graphviz\n{_node.attributes['code']}\n```")
+> 
+>     @pushing_context
+>     def visit_update_node(self, _node):
+>         """Sphinx update_node directive."""
+>         self._push_box("UPDATE")
+> 
+>     @pushing_context
+>     def visit_legend(self, _node):
+>         """Sphinx legend directive."""
+>         self._push_box("LEGEND")
+> 
+>     @pushing_context
+>     def visit_toctree(self, _node):
+>         """Sphinx toctree directive."""
+>         self._push_box("TOCTREE")
+> 
+>     @pushing_context
+>     def visit_citation(self, _node):
+>         """Sphinx citation directive."""
+>         self._push_box("CITATION")
+> 
+>     @pushing_context
+>     def visit_classifier(self, _node):
+>         """Sphinx classifier directive."""
+>         self._push_box("CLASSIFIER")
+> 
+>     @pushing_context
+>     def visit_abbreviation(self, _node):
+>         """Sphinx abbreviation directive."""
+>         self._push_box("ABBREVIATION")
+> 
+>     @pushing_context
+>     def visit_attribution(self, _node):
+>         """Sphinx attribution directive."""
+>         self._push_box("ATTRIBUTION")
+> 
+>     @pushing_context
+>     def visit_caption(self, _node):
+>         """Sphinx caption directive."""
+>         self._push_box("CAPTION")
+> 
+652a743,750
+>     def visit_desc_optional(self, _node):
+>         """Optional parameters in function/method signatures."""
+>         self._push_context(WrappedContext("[", "]"))
+>         self._push_context(CommaSeparatedContext(", "))
+> 
+>     def depart_desc_optional(self, _node):
+>         self._pop_context(count=2)
+> 
+775c873
+<             self.unknown_visit(node)
+---
+>             pass
+781c879
+<             self.unknown_visit(node)
+---
+>             pass

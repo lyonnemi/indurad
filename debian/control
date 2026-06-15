@@ -1,0 +1,19 @@
+Source: indurad-ci-launcher
+Section: utils
+Priority: optional
+Maintainer: Jan Garcia <jan.garcia@indurad.com>
+Uploaders: Philipp Hübner <philipp.huebner@indurad.com>,
+           Johannes Reinartz <johannes.reinartz@indurad.com>
+Build-Depends: debhelper-compat (= 13), dh-python, python3-setuptools, python3-all, python3-yaml, git
+Standards-Version: 4.6.2
+Homepage: https://git.indurad.x/software-qa/indurad-ci
+Vcs-Browser: https://git.indurad.x/software-qa/indurad-ci
+Vcs-Git: https://git.indurad.x/software-qa/indurad-ci.git
+Rules-Requires-Root: no
+
+Package: indurad-ci-launcher
+Architecture: all
+Depends: ${python3:Depends}, ${misc:Depends}, python3-yaml
+Description: indurad-ci CLI-command
+ Run the command indurad-ci to locally execute Python-based CI jobs
+ that make use of Python packages in software-qa/indurad-ci on GitLab.

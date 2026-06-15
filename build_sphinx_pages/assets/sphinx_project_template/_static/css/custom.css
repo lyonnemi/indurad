@@ -1,0 +1,75 @@
+.wy-grid-for-nav {
+   overflow:scroll
+}
+
+.wy-table-responsive table td,
+.wy-table-responsive table th {
+    white-space:normal
+}
+
+.wy-table-responsive {
+    overflow:visible
+}
+
+.row-odd {
+    background-color: white
+}
+
+.wy-side-nav-search > div.version {
+    margin-top: -.4045em;
+    margin-bottom: .809em;
+    font-weight: 400;
+    color: hsla(0,0%,100%,.3);
+}
+
+.iBlack {
+    color: rgb(37, 34, 38);
+}
+
+.iBlack75 {
+    color: rgb(83, 83, 88);
+}
+
+.iGold {
+    color: rgb(178, 129, 88);
+}
+
+.iGold80 {
+    color: rgb(192, 150, 112);
+}
+
+.iGold60 {
+    color: rgb(206, 172, 141);
+}
+
+.iGold25 {
+    color: rgb(234, 218, 202);
+}
+
+.iBronze {
+    color: rgb(203, 81, 97);
+}
+
+.iPortTurquoise {
+    color: rgb(64, 168, 181);
+}
+
+.black {
+    color: rgb(0, 0, 0);
+}
+
+.black80 {
+    color: rgb(51, 51, 51);
+}
+
+.black50 {
+    color: rgb(128, 128, 128);
+}
+
+.black10 {
+    color: rgb(229, 229, 229);
+}
+
+.white {
+    color: rgb(255, 255, 255);
+}

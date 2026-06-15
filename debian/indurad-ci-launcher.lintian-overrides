@@ -1,0 +1,2 @@
+indurad-ci-launcher: no-manual-page [usr/bin/indurad-ci]
+indurad-ci-launcher: package-contains-documentation-outside-usr-share-doc [usr/lib/python3/dist-packages/indurad_ci_launcher*]

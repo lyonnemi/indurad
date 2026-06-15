@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+export PYTHONPATH="$PYTHONPATH:$INDURAD_CI_DIR"
+export PYTHONUNBUFFERED=1
+
+CCACHE_PATH="$(builtin type -P ccache)"
+if [[ $CCACHE_PATH ]]; then
+  export CMAKE_C_COMPILER_LAUNCHER="$CCACHE_PATH"
+  export CMAKE_CXX_COMPILER_LAUNCHER="$CCACHE_PATH"
+fi

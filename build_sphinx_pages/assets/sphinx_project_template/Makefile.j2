@@ -1,0 +1,22 @@
+# Sphinx Repo Template 1.4.9
+# want to use bash to use pushd and popd
+SHELL := /bin/bash
+# Minimal makefile for Sphinx documentation
+
+# You can override these from the command line if necessary. The more interesting are REPOVERSION
+# (for CI builds on different branches) and SPHINXOPTS for additional sphinx-builder options.
+SPHINXOPTS    ?= -n -w warn.log #-vv
+SPHINXBUILD   ?= sphinx-build
+SOURCEDIR     = .
+BUILDDIR      = build
+
+# Put it first so that "make" without argument is like "make help".
+help:
+	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+
+.PHONY: help Makefile
+
+# Catch-all target: route all unknown targets to Sphinx using the new
+# "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
+%: Makefile
+	@PYTHONPATH="{{ setup_dir_path }}:$(PYTHONPATH){% for autodoc_source_path in autodoc_source_paths %}:{{ autodoc_source_path }}{% endfor %}" $(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O){% for build_tag in build_tags %} -t {{ build_tag }}{% endfor %}

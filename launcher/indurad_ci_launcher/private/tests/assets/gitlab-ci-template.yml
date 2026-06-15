@@ -1,0 +1,13 @@
+include:
+  - project: 'software-qa/indurad-ci'
+    ref: '$INDURAD_CI_LAUNCHER_TEST_SHA'
+    file: '/gitlab/gitlab-ci.yml'
+
+.job-template:
+  script:
+    - 'echo hello'
+
+'Dummy job':
+  extends: '.job-template'
+  script:
+    - !reference[.job-template, script]

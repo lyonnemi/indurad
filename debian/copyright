@@ -1,0 +1,9 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: indurad-ci
+Source: https://git.indurad.x/software-qa/indurad-ci
+
+Files: *
+Copyright: 2022 indurad GmbH
+License: proprietary
+ all rights reserved by indurad GmbH
+

@@ -1,0 +1,238 @@
+default:
+  image: "docker-registry.indurad.x/devops/docker-images/debian/12:production"
+  interruptible: true
+
+variables:
+  INDURAD_CI_DOCKER_IMAGE: 'docker-registry.indurad.x/devops/docker-images/debian/12:production'
+
+workflow:
+  rules:
+    - if: '$CI_COMMIT_TAG != null'
+    - if: '$CI_COMMIT_REF_PROTECTED == "true"'
+    - if: '$CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH'
+    - if: '$CI_PIPELINE_SOURCE != "push"'
+
+.indurad-ci-scripts:
+  image: '$INDURAD_CI_DOCKER_IMAGE'
+  before_script:
+    # Create a temporary directory for the git checkout of this repository
+    - |
+      # indurad-ci setup
+      echo -e "\e[0Ksection_start:`date +%s`:indurad_ci_scripts_setup[collapsed=true]\r\x1B[0K\x1B[1m\x1B[96mSetting up indurad-ci scripts\x1B[0m"
+      export INDURAD_CI_DIR="$(mktemp -d)"
+      /usr/bin/env sh -x << EOF
+      # Detect the referenced branch/hash of the indurad-ci repository
+      INDURAD_CI_BRANCH="$(python3 -c "import yaml; yaml.add_multi_constructor('\x21', lambda loader, suffix, node: None, Loader=yaml.SafeLoader); print(next(x for x in yaml.safe_load(open('$CI_CONFIG_PATH', 'r', encoding='utf-8'))['include'] if x['project'] == 'software-qa/indurad-ci')['ref'])")"
+      # Clone the indurad-ci repository
+      git clone --quiet git@git.indurad.x:software-qa/indurad-ci.git "$INDURAD_CI_DIR"
+      # Checkout the referenced branch/commit in the indurad-ci repository
+      git -C "$INDURAD_CI_DIR" checkout --quiet "\$INDURAD_CI_BRANCH"
+      # Print revision information
+      git --no-pager -C "$INDURAD_CI_DIR" show --no-patch --format="Using indurad-ci revision %H (%cd)."
+      # Source the entry-point script of the indurad-ci repository
+      EOF
+      . "$INDURAD_CI_DIR/source.sh"
+      echo -e "\e[0Ksection_end:`date +%s`:indurad_ci_scripts_setup\r\e[0K"
+
+'🔍 Pre-commit':
+  extends: [ '.indurad-ci-scripts' ]
+  needs: [ ]
+  tags: [ 'simple' ]
+  stage: 'test'
+  rules:
+    - exists: [ '.pre-commit-config.yaml' ]
+      if: '$CI_MERGE_REQUEST_LABELS =~ /.*no-pre-commit/'
+      allow_failure: true
+    - exists: [ '.pre-commit-config.yaml' ]
+  variables:
+    PRE_COMMIT_HOME: '$CI_PROJECT_DIR/.cache/pre-commit'
+  cache:
+    paths: [ '$PRE_COMMIT_HOME' ]
+  script:
+    - 'python3 -m indurad_ci.pre_commit'
+
+.build-softfs:
+  extends: [ '.indurad-ci-scripts' ]
+  timeout: '2 hours'
+  needs: [ ]
+  tags: [ 'software', 'toolchains' ]
+  stage: 'build'
+  variables:
+    SOFTFS_SOURCE_PATH: '' # path to the directory containing the calvin.conf to build (--project-dir)
+    SOFTFS_TARGET: '' # CMake target to build (--target)
+    SOFTFS_PLATFORM: '' # platform to build for (--platform)
+    SOFTFS_TOOLCHAIN_VERSION: '' # toolchain version to use fo the build (--toolchain-version)
+    SOFTFS_CONFIG_FILE_NAME: '' # name of the calvin config file to use (--file)
+    SOFTFS_ARTIFACT: '' # artifact type to create (--artifact)
+    SOFTFS_USER: '$GITLAB_USER_LOGIN' # name of the user to write into image.version (--user)
+    SOFTFS_USE_BRANCH_HEAD: '' # If true, uses the HEAD revision of the configured module branches (--use-branch-head)
+    SOFTFS_ALWAYS_CREATE_ARTIFACTS: '' # If true, creates artifacts in development builds too.
+  script:
+    - 'python3 -m indurad_ci.build_softfs'
+  allow_failure:
+    exit_codes: 2
+  artifacts:
+    when: always
+    paths:
+      - 'build/**/*.ifus2'
+      - 'build/**/calvin.log'
+      - 'build/**/calvin-verbose.log'
+      - 'build/**/cmake.log'
+      - 'build/**/ninja-build.log'
+      - 'build/**/.ninja_log'
+    reports:
+      junit:
+        - 'build/**/cmake.junit.xml'
+        - 'build/**/compiler.junit.xml'
+    expire_in: '2 days' # Only applies to old artifacts. The latest pipeline artifact does not expire.
+
+.build-softfs-flatpak:
+  extends: [ '.build-softfs' ]
+  variables:
+    BUILD_FLATPAK: 'true'
+  artifacts:
+    paths:
+      - 'build/**/*.flatpak'
+      - 'build/**/calvin.log'
+      - 'build/**/calvin-verbose.log'
+      - 'build/**/cmake.log'
+      - 'build/**/ninja-build.log'
+      - 'build/**/.ninja_log'
+  tags: [ "flatpak" ]
+  rules:
+    - if: '$CI_BUILD_SOFTFS_FLATPAK == "true"'
+    - if: '$CI_MERGE_REQUEST_LABELS =~ /CI: build SOFTFS flatpak/'
+
+.build-config:
+  extends: [ '.indurad-ci-scripts' ]
+  timeout: '60 minutes'
+  needs: [ ]
+  tags: [ 'software' ]
+  stage: 'build'
+  variables:
+    SOFTFS_SOURCE_PATH: '' # path to the directory containing the calvin.conf to build (--project-dir)
+  script:
+    - 'python3 -m indurad_ci.build_softfs'
+  artifacts:
+    paths:
+      - 'build/**/*.ifus2'
+      - 'build/**/CONFIG-*.bin'
+      - 'build/**/calvin.log'
+      - 'build/**/calvin-verbose.log'
+    expire_in: '2 days' # Only applies to old artifacts. The latest pipeline artifact does not expire.
+
+.build-docker:
+  stage: 'deploy'
+  image:
+    name: 'docker-registry.indurad.x/devops/gitlab/kaniko:main'
+    entrypoint: [""]
+  variables:
+    GIT_STRATEGY: 'clone'
+    DOCKERFILE_PATH: '.'
+    DOCKER_CONTEXT: "$DOCKERFILE_PATH"
+  script:
+    - 'mkdir -p /kaniko/ssl/certs'
+    - 'echo "$INDURAD_CA_CERTS" >> /kaniko/ssl/certs/ca-certificates.crt'
+    - 'echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(printf "%s:%s" "$CI_REGISTRY_USER" "$CI_REGISTRY_PASSWORD" | base64 -w 0)\"},\"$CI_DEPENDENCY_PROXY_SERVER\":{\"auth\":\"$(printf "%s:%s" "$CI_DEPENDENCY_PROXY_USER" "$CI_DEPENDENCY_PROXY_PASSWORD" | base64 -w 0)\"}}}" > /kaniko/.docker/config.json'
+    - /kaniko/executor
+      --registry-mirror "$CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX"
+      --context "${CI_PROJECT_DIR}/${DOCKER_CONTEXT}"
+      --dockerfile "${CI_PROJECT_DIR}/${DOCKERFILE_PATH}/Dockerfile"
+      --destination "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_SLUG}"
+      --build-arg 'INDURAD_CA_CERTS'
+
+.build-sphinx-pages:
+  stage: build
+  extends: '.indurad-ci-scripts'
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+    GIT_SUBMODULE_UPDATE_FLAGS: --remote
+  script:
+    - 'python3 -m indurad_ci.build_sphinx_pages'
+  cache:
+    # The key is the sha256 hash of `indurad_ci/build_sphinx_pages/assets/sphinx_project_template/yarn.lock`
+    # When this file is updated, `.tests/check_sphinx_cache_hash.py` will fail, unless this hash is updated as well
+    # The new hash will be displayed by the failing unit test, or can alternatively be computed with
+    # `sha256sum indurad_ci/build_sphinx_pages/assets/sphinx_project_template/yarn.lock`
+    key: "248f59be476036f9cb98030fd0ff81942a2b4bb71854109f2bca6deeffb7db94"
+    paths:
+      - "$CI_PROJECT_DIR/.cache/indurad-ci/build_sphinx_pages"
+  tags:
+    - software
+  artifacts:
+    expire_in: 2 hours
+    paths:
+      - public
+    reports:
+      codequality: codequality.json
+
+.run-project-main:
+  extends: [ '.indurad-ci-scripts' ]
+  timeout: '2 hours'
+  needs: [ ]
+  tags: [ 'software' ]
+  stage: 'test'
+  variables:
+    SOFTFS_SOURCE_PATH: '' # path to the directory containing the calvin.conf to build (--project-dir)
+    SOFTFS_CONFIG_FILE_NAME: '' # name of the calvin config file to use (--file)
+  script:
+    - 'python3 -m indurad_ci.run_project_main'
+  artifacts:
+    when: always
+    paths:
+      - 'build/*/**.log'
+      - 'build/runtime/*/**.log'
+      - 'build/runtime/**/DATA/iDBG/*'
+      - 'build/runtime/**/DATA/iERR/*'
+    expire_in: '2 days'
+
+.run-project-tests:
+  extends: [ '.indurad-ci-scripts' ]
+  timeout: '2 hours'
+  needs: [ ]
+  tags: [ 'software' ]
+  stage: 'test'
+  variables:
+    SOFTFS_SOURCE_PATH: '' # path to the directory containing the calvin.conf to build (--project-dir)
+    SOFTFS_CONFIG_FILE_NAME: '' # name of the calvin config file to use (--file)
+    TESTS_TARGET: '' # build target that defines which test runners shall be built
+    CTEST_LABEL_FILTER: '' # arbitrary regex for selecting which tests shall be run by ctest
+    ASAN_SUPPRESSION_PATH: '' # path to asan suppression files (optional)
+  script:
+    - 'python3 -m indurad_ci.run_project_tests'
+  allow_failure:
+    exit_codes: 2
+
+.publish-release:
+  extends: '.indurad-ci-scripts'
+  rules:
+    - if: '$CI_COMMIT_TAG == null'
+      when: 'never'
+    - when: 'on_success'
+  stage: 'deploy'
+  script: 'python3 -m indurad_ci.publish_release'
+
+'🕵 Check for upstream updates':
+  extends: '.indurad-ci-scripts'
+  needs: [ ]
+  stage: 'test'
+  script: 'python3 -m indurad_ci.check_for_upstream_updates'
+  rules:
+    - exists: [ '.check-for-upstream-updates-config.yaml' ]
+  allow_failure:
+    exit_codes: 42
+
+.run-survey:
+  extends: [ '.indurad-ci-scripts' ]
+  needs: [ ]
+  tags: [ 'software' ]
+  stage: 'build'
+  variables:
+    SURVEY_PATH: '' # path to the survey directory
+    VERIFY_URDFS: '' # surveys where the generated URDF should be checked against the committed URDF
+  script:
+    - 'python3 -m indurad_ci.run_survey'
+  artifacts:
+    when: always
+    paths:
+      - 'survey/**/output/*'

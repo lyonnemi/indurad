@@ -1,0 +1,1 @@
+include indurad_ci_launcher/private/tests/assets/gitlab-ci-template.yml

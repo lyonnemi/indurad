@@ -1,0 +1,13 @@
+[tool.black]
+line-length = 119
+
+[tool.mypy]
+strict = true
+scripts_are_modules = true
+
+[[tool.mypy.overrides]]
+module = [
+    "my_package.*"  # .tests/documentation_projects/basic_documentation/my_package
+]
+disable_error_code = ["import-not-found"]
+ignore_missing_imports = true

@@ -1,0 +1,8 @@
+indurad-ci-launcher source: package-does-not-install-examples [examples/]
+indurad-ci-launcher source: very-long-line-length-in-source-file 859 > 512 [indurad_ci/compiler_warning_parser/tests/assets/ninja.log:12]
+indurad-ci-launcher source: very-long-line-length-in-source-file * > 512 [.tests/documentation_projects/basic_documentation_expected_artifacts_html/*]
+indurad-ci-launcher source: very-long-line-length-in-source-file * > 512 [.tests/documentation_projects/basic_documentation_expected_artifacts_md/*]
+indurad-ci-launcher source: very-long-line-length-in-source-file * > 512 [indurad_ci/build_sphinx_pages/assets/*]
+indurad-ci-launcher source: very-long-line-length-in-source-file * > 512 [README.md:*]
+indurad-ci-launcher source: source-is-missing [indurad_ci/build_sphinx_pages/assets/sphinx_project_template/_static/js/mermaid.js]
+indurad-ci-launcher source: source-contains-prebuilt-javascript-object [indurad_ci/build_sphinx_pages/assets/sphinx_project_template/_static/js/mermaid.js]

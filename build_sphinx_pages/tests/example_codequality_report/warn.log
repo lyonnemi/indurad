@@ -1,0 +1,19 @@
+/foo/bar/my_repo/baz/module.py:docstring of some_module.something:1: WARNING: Inline emphasis start-string without end-string.
+/foo/bar/my_repo/build/sphinx_setup/venv/lib/python3.11/site-packages/sphinxcontrib/images.py:32: RemovedInSphinx80Warning: The alias 'sphinx.util.status_iterator' is deprecated, use 'sphinx.util.display.status_iterator' instead. Check CHANGES for Sphinx API modifications.
+[91m/foo/bar/my_repo/build/sphinx_setup/some/dir/README.md:772: SEVERE: duplicate label something[39;49;00m
+[31m/foo/bar/my_repo/build/sphinx_setup/something.md:10: ERROR: At least one body element must separate transitions; adjacent transitions are not allowed.[39;49;00m
+[91m/foo/bar/my_repo/build/sphinx_setup/my_submodule/some/other/dir/README.md:5: WARNING: Document headings start at H3, not H1 [myst.header][39;49;00m
+[31m/foo/bar/my_repo/build/sphinx_setup/main.md:107: ERROR: Document may not end with a transition.[39;49;00m
+/foo/bar/my_repo/build/sphinx_setup/foobar/index.rst:3: CRITICAL: Problems with "include" directive path:
+InputError: [Errno 2] Datei oder Verzeichnis nicht gefunden: 'foobar.rst'.
+[91msomething/index.rst: VERBOSE: document isn't included in any toctree[39;49;00m
+[91m/foo/bar/my_repo/build/sphinx_setup/my_submodule/release.md: INFO: document isn't included in any toctree[39;49;00m
+[91m/foo/bar/my_repo/build/sphinx_setup/my_submodule/index.rst: DEBUG: this warning is suppressed[39;49;00m
+this line is dropped
+/foo/bar/my_repo/build/sphinx_setup/index.rst: DEBUG: this warning is also suppressed
+WARNING: command 'mmdc' cannot be run (needed for mermaid output), check the mermaid_cmd setting
+
+this empty line is also dropped
+this line : is not dropped
+Sphinx error:
+critical error message in the next line

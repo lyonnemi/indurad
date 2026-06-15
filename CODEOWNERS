@@ -1,0 +1,19 @@
+[Project Structure and Guidelines]
+################################################################################
+
+# Repository and overall project (primary monolith project and repository maintenance)
+#    Project structure, guidelines and release management.
+#
+* @hberg @jreinartz
+
+# Directory: _gitlab_
+# Description: |2
+#    Job templates for GitLab CI
+#
+/gitlab/ @hberg @jreinartz
+
+# Directory: _indurad-ci_
+# Description: |2
+#    Tools to run CI-like builds locally
+#
+/indurad_ci/ @hberg @jreinartz
