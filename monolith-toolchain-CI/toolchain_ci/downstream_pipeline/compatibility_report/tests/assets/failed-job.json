@@ -4,9 +4,9 @@
 	"distro": "iCharlie",
 	"toolchain_version": "12.0.1",
 	"build_state": "FAILURE",
-	"job_url": "https://gitlab.example.test/monolith/-/jobs/failed-job-a",
 	"platform": "ct20",
 	"cxx": "98",
+	"job_url": "https://gitlab.example.test/monolith/-/jobs/failed-job-a",
 	"targets": [
 		[
 			"iframework/tests/iframework-testrunner",

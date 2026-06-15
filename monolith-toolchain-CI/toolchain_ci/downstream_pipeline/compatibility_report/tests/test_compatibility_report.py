@@ -2,7 +2,6 @@ import logging
 import pathlib
 import tempfile
 import unittest
-
 from ..private.report import generate_compatibility_report
 
 _ASSETS_PATH = pathlib.Path(__file__).parent / "assets"
@@ -79,5 +78,4 @@ class TestCompatibilityReport(unittest.TestCase):
                 "ERROR:compatibility_report:Build status:FAILURE",
                 "ERROR:compatibility_report:------------------------------------",
             ]
-
             self.assertEqual(expected_log_lines, context.output)

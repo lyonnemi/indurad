@@ -182,7 +182,7 @@ def generate_compatibility_report(
             )
         )
 
-    if failed_builds:
+    if len(failed_builds) > 0:
         logger.error(f"Failed builds: {len(failed_builds)}")
         for failed_build in failed_builds:
             logger.error(f"Toolchain Version: {failed_build.toolchain_version}")
